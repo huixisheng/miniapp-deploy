@@ -1,3 +1,5 @@
+> 注意，需要设置 open IDE -> Settings -> Security Settings, and set Service Port On
+
 ## 使用 ##
 > 或者局部安装使用 npx 
 
