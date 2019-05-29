@@ -51,6 +51,7 @@ async function main() {
     needBuild = ok;
   }
 
+  // needBuild = false;
 
   const spinner = ora('正在发布小程序...').start();
   if (needBuild) {
