@@ -82,9 +82,15 @@ function runCommand(command) {
   })
 }
 
+function readJson(jsonFile) {
+  const content = fs.readFileSync(jsonFile, 'utf-8');
+  return JSON.parse(content);
+}
+
 function renameProjectConfigName() {
   const projectJson = path.join(appPath, 'project.config.json');
-  const projectConfig = require(projectJson);
+  // require 会导致文件被修改了
+  const projectConfig = readJson(projectJson);
   projectConfig.projectname = appid + pkg.name;
   projectConfig.appid = appid;
   projectConfig.miniprogramRoot = './';
