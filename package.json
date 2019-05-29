@@ -1,6 +1,6 @@
 {
   "name": "miniapp-deploy",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "简单封装小程序的发布命令",
   "main": "index.js",
   "scripts": {
