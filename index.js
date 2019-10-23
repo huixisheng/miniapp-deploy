@@ -13,15 +13,26 @@ let appsConfig = [];
 const filepath = path.join(appPath, filename);
 const pkg = require(path.join(appPath, 'package.json'));
 
-if (fs.existsSync(filepath)) {
-  appsConfig = require(filepath);
-} else {
-  console.error(filename, '配置文件文件不存在');
-  shell.exit(1);
-}
 shell.config.silent = false;
 let appid = '';
 let needBuild = true;
+
+if (fs.existsSync(filepath)) {
+  appsConfig = require(filepath);
+} else {
+  const projectConfig = getProjectConfig();
+  if (!projectConfig.appid) {
+    console.error(filename, '配置文件文件不存在');
+    console.error('检查 project.config.json 是否有问题');
+    shell.exit(1);
+  }
+  appid = projectConfig.appid;
+  appsConfig.push({
+    name: projectConfig.projectname,
+    value: appid,
+  });
+}
+
 // const appPlatform = process.env.APP_FLATFORM;
 // notifier.notify('Message');
 
@@ -87,10 +98,14 @@ function readJson(jsonFile) {
   return JSON.parse(content);
 }
 
-function renameProjectConfigName() {
+function getProjectConfig() {
   const projectJson = path.join(appPath, 'project.config.json');
-  // require 会导致文件被修改了
   const projectConfig = readJson(projectJson);
+  return projectConfig;
+}
+
+function renameProjectConfigName() {
+  const projectConfig = getProjectConfig();
   projectConfig.projectname = appid + pkg.name;
   projectConfig.appid = appid;
   projectConfig.miniprogramRoot = './';
@@ -126,10 +141,10 @@ function wxUpload(spinner) {
   
   shell.exec(shellCommand, function (code, stdout, stderr) {
     if (code !== 0) {
-      shell.echo('生成失败');
-      console.log('Exit code:', code);
-      console.log('Program output:', stdout);
-      console.log('Program stderr:', JSON.parse(stderr));
+      shell.echo('上传失败');
+      console.error('Exit code:', code);
+      console.error('Program output:', stdout);
+      console.error('Program stderr:', JSON.parse(stderr));
       shell.exit(1);
     }
     spinner.succeed('上传成功');
